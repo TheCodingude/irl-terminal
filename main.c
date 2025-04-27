@@ -1,5 +1,43 @@
 #include <GLFW/glfw3.h>
+#include <GL/glut.h>
 #include <stdio.h>
+#include <time.h>
+
+#define STB_EASY_FONT_IMPLEMENTATION
+#include "stb_easy_font.h"
+
+void drawText(float x, float y, float scale, const char* text) {
+    char buffer[99999]; // A buffer for vertices
+    int num_quads;
+
+    glPushMatrix();
+    glTranslatef(x, y, 0); 
+    glScalef(scale, scale, 1);    
+    glColor3f(1.0f, 1.0f, 1.0f); // TODO: Add color to arguements 
+
+    num_quads = stb_easy_font_print(0, 0, (char*)text, NULL, buffer, sizeof(buffer));
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 16, buffer);
+    glDrawArrays(GL_QUADS, 0, num_quads * 4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    glPopMatrix();
+}
+
+void Clock(float x, float y, float scale){
+    time_t now;
+    struct tm *timeinfo;
+
+    time(&now);
+    timeinfo = localtime(&now);
+
+    char buffer[80];
+    strftime(buffer, sizeof(buffer), "%H:%M:%S", timeinfo);
+    drawText(x,y,scale,buffer);
+}
+
+
 
 int main(void) {
     if (!glfwInit()) {
@@ -21,6 +59,12 @@ int main(void) {
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable V-Sync
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, mode->width, mode->height, 0.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
 
     while (!glfwWindowShouldClose(window)) {
 
@@ -34,17 +78,12 @@ int main(void) {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glBegin(GL_LINE_LOOP); 
-
-        glColor3f(1.0f, 1.0f, 1.0f); 
-
-        glVertex2f(-0.5f, -0.5f); 
-        glVertex2f( 0.5f, -0.5f); 
-        glVertex2f( 0.5f,  0.5f); 
-        glVertex2f(-0.5f,  0.5f); 
-        glEnd();
 
 
+
+        Clock(100.0f, 100.0f, 10.0f);
+
+        // glOrtho()
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
