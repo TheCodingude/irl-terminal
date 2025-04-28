@@ -33,6 +33,20 @@ void drawText(float x, float y, float scale, const char* text, Vec3 color) {
     glPopMatrix();
 }
 
+void Date(float x, float y, float scale, Vec3 color){
+    time_t now;
+    struct tm *timeinfo;
+
+    time(&now);
+    timeinfo = localtime(&now);
+
+    char buffer[100];
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d", timeinfo);
+
+    drawText(x, y, scale, buffer, color);
+
+}
+
 void Clock(float x, float y, float scale, bool twelvehour, Vec3 color){
     time_t now;
     struct tm *timeinfo;
@@ -44,7 +58,7 @@ void Clock(float x, float y, float scale, bool twelvehour, Vec3 color){
         timeinfo->tm_hour = timeinfo->tm_hour % 12;
     }
     
-    char buffer[80];
+    char buffer[100];
     strftime(buffer, sizeof(buffer), "%H:%M:%S", timeinfo);
     drawText(x,y,scale,buffer, color);
 }
@@ -91,9 +105,11 @@ int main(void) {
         glClear(GL_COLOR_BUFFER_BIT);
 
 
-        Vec3 color = {0.35f, 1.0f, 0.52f};
+        // Vec3 color = {0.35f, 1.0f, 0.52f}; // Random color
+        Vec3 color = {1.0f, 1.0f, 1.0f}; // white
 
         Clock(100.0f, 100.0f, 10.0f, false, color);
+        Date(1000.0f, 100.0f, 10.0f, color);
 
         // glOrtho()
 
