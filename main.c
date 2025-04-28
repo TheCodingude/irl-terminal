@@ -7,14 +7,21 @@
 #define STB_EASY_FONT_IMPLEMENTATION
 #include "stb_easy_font.h"
 
-void drawText(float x, float y, float scale, const char* text) {
+typedef struct{
+    float red;
+    float green;
+    float blue;
+} Vec3;
+
+
+void drawText(float x, float y, float scale, const char* text, Vec3 color) {
     char buffer[99999]; // A buffer for vertices
     int num_quads;
 
     glPushMatrix();
     glTranslatef(x, y, 0); 
     glScalef(scale, scale, 1);    
-    glColor3f(1.0f, 1.0f, 1.0f); // TODO: Add color to arguements 
+    glColor3f(color.red, color.green, color.blue); // TODO: Add color to arguements 
 
     num_quads = stb_easy_font_print(0, 0, (char*)text, NULL, buffer, sizeof(buffer));
 
@@ -26,7 +33,7 @@ void drawText(float x, float y, float scale, const char* text) {
     glPopMatrix();
 }
 
-void Clock(float x, float y, float scale, bool twelvehour){
+void Clock(float x, float y, float scale, bool twelvehour, Vec3 color){
     time_t now;
     struct tm *timeinfo;
 
@@ -39,7 +46,7 @@ void Clock(float x, float y, float scale, bool twelvehour){
     
     char buffer[80];
     strftime(buffer, sizeof(buffer), "%H:%M:%S", timeinfo);
-    drawText(x,y,scale,buffer);
+    drawText(x,y,scale,buffer, color);
 }
 
 
@@ -84,9 +91,9 @@ int main(void) {
         glClear(GL_COLOR_BUFFER_BIT);
 
 
+        Vec3 color = {0.35f, 1.0f, 0.52f};
 
-
-        Clock(100.0f, 100.0f, 10.0f, false);
+        Clock(100.0f, 100.0f, 10.0f, false, color);
 
         // glOrtho()
 
