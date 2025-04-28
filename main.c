@@ -2,6 +2,7 @@
 #include <GL/glut.h>
 #include <stdio.h>
 #include <time.h>
+#include <stdbool.h>
 
 #define STB_EASY_FONT_IMPLEMENTATION
 #include "stb_easy_font.h"
@@ -25,13 +26,17 @@ void drawText(float x, float y, float scale, const char* text) {
     glPopMatrix();
 }
 
-void Clock(float x, float y, float scale){
+void Clock(float x, float y, float scale, bool twelvehour){
     time_t now;
     struct tm *timeinfo;
 
     time(&now);
     timeinfo = localtime(&now);
 
+    if(twelvehour){
+        timeinfo->tm_hour = timeinfo->tm_hour % 12;
+    }
+    
     char buffer[80];
     strftime(buffer, sizeof(buffer), "%H:%M:%S", timeinfo);
     drawText(x,y,scale,buffer);
@@ -46,10 +51,10 @@ int main(void) {
     }
 
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
     GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "OpenGL Window", monitor, NULL);
-
 
     if (!window) {
         fprintf(stderr, "Failed to create GLFW window\n");
@@ -81,7 +86,7 @@ int main(void) {
 
 
 
-        Clock(100.0f, 100.0f, 10.0f);
+        Clock(100.0f, 100.0f, 10.0f, false);
 
         // glOrtho()
 
