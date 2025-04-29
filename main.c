@@ -1,8 +1,11 @@
-#include <GLFW/glfw3.h>
-#include <GL/glut.h>
 #include <stdio.h>
 #include <time.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <GLFW/glfw3.h>
+#include <GL/glut.h>
 
 #define STB_EASY_FONT_IMPLEMENTATION
 #include "stb_easy_font.h"
@@ -12,6 +15,34 @@ typedef struct{
     float green;
     float blue;
 } Vec3;
+
+Vec3 hex_to_rgb(const char *hex) {
+    Vec3 color = {0};
+
+    // Skip leading '#' if present
+    if (hex[0] == '#') {
+        hex++;
+    }
+
+    if (strlen(hex) != 6) {
+        fprintf(stderr, "Invalid hex color format: %s\n", hex);
+        return color;
+    }
+
+    char r_str[3] = { hex[0], hex[1], '\0' };
+    char g_str[3] = { hex[2], hex[3], '\0' };
+    char b_str[3] = { hex[4], hex[5], '\0' };
+
+    int r = (int)strtol(r_str, NULL, 16);
+    int g = (int)strtol(g_str, NULL, 16);
+    int b = (int)strtol(b_str, NULL, 16);
+
+    color.red = r / 255.0f;
+    color.green = g / 255.0f;  // normalize the shits
+    color.blue = b / 255.0f;
+
+    return color;
+}
 
 
 void drawText(float x, float y, float scale, const char* text, Vec3 color) {
@@ -106,7 +137,9 @@ int main(void) {
 
 
         // Vec3 color = {0.35f, 1.0f, 0.52f}; // Random color
-        Vec3 color = {1.0f, 1.0f, 1.0f}; // white
+        // Vec3 color = {1.0f, 1.0f, 1.0f}; // white
+        Vec3 color = hex_to_rgb("#1058c4");
+
 
         Clock(100.0f, 100.0f, 10.0f, false, color);
         Date(1000.0f, 100.0f, 10.0f, color);
